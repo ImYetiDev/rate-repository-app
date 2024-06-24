@@ -1,9 +1,11 @@
 import React from 'react'
 import { FlatList, Text, View } from 'react-native'
-import repositories from '../data/repositories'
 import RepositoryItem from './RepositoryItem.jsx'
+import useRepositories from '../hooks/useRepositories.js'
 
 const RepositoryList = () => {
+  const { repositories } = useRepositories()
+  
   return (
     <FlatList 
       data={repositories}
