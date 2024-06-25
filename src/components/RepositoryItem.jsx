@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import StyledText from './StyledText';
 import RepositoryStats from './RepositoryStats';
 import theme from '../theme';
@@ -8,8 +9,29 @@ import theme from '../theme';
 const RepositoryItemHeader = (props) => {
   const [liked, setLiked] = useState(false);
 
-  const toggleLike = () => {
-    setLiked(!liked);
+  useEffect(() => {
+    const getLikedStatus = async () => {
+      try {
+        const value = await AsyncStorage.getItem(`liked_${props.id}`);
+        if (value !== null) {
+          setLiked(JSON.parse(value));
+        }
+      } catch (e) {
+        console.error("Failed to load liked status", e);
+      }
+    };
+
+    getLikedStatus();
+  }, [props.id]);
+
+  const toggleLike = async () => {
+    try {
+      const newLikedStatus = !liked;
+      setLiked(newLikedStatus);
+      await AsyncStorage.setItem(`liked_${props.id}`, JSON.stringify(newLikedStatus));
+    } catch (e) {
+      console.error("Failed to save liked status", e);
+    }
   };
 
   return (
